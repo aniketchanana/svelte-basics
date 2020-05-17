@@ -1,11 +1,22 @@
 <script>
     import PollStore from '../stores/PollStore.js';
     import Card from '../shared/Card.svelte';
+    import Button from '../shared/Button.svelte';
+    import {tweened} from 'svelte/motion';
     export let poll;
 
     $: totalVotes = poll.voteA + poll.voteB;
-    $: percentA = Math.floor(100 / totalVotes * poll.voteA);
-    $: percentB = Math.floor(100 / totalVotes * poll.voteB);
+    $: percentA = Math.floor(100 / totalVotes * poll.voteA) || 0;
+    $: percentB = Math.floor(100 / totalVotes * poll.voteB) || 0;
+
+    const tweenedA = tweened(0);
+    const tweenedB = tweened(0);
+
+    $: tweenedA.set(percentA);
+    $: tweenedB.set(percentB);
+
+    $: console.log($tweenedA,$tweenedB);
+    //tweened percentages
     const handelVote = (option,id) => {
         PollStore.update(currentPolls => {
             let copiedPolls = [...currentPolls];
@@ -20,6 +31,12 @@
             return copiedPolls;
         })
     }
+    const handelDelete = id => {
+        console.log(id);
+        PollStore.update(currentPolls => {
+            return currentPolls.filter( poll => poll.id !== id);
+        })
+    }
 </script>
 
 <Card>
@@ -27,12 +44,15 @@
         <h3>{poll.question}</h3>
         <p>Total Votes: ({totalVotes})</p>
         <div class="answer" on:click={() => handelVote('a',poll.id)}>
-            <div class="percent percent-a" style="width: {percentA}%;"></div>
+            <div class="percent percent-a" style="width: {$tweenedA}%;"></div>
             <span>{poll.answerA} ({poll.voteA})</span>
         </div>
         <div class="answer" on:click={() => handelVote('b',poll.id)}>
-            <div class="percent percent-b" style="width: {percentB}%;"></div>
+            <div class="percent percent-b" style="width: {$tweenedB}%;"></div>
             <span>{poll.answerB} ({poll.voteB})</span>
+        </div>
+        <div class="delete">
+            <Button flat={true} on:click={()=> handelDelete(poll.id)}>Delete</Button>
         </div>
     </div>
 </Card>
@@ -74,4 +94,8 @@
     border-left: 4px solid #45c496;
     background: rgba(69, 196, 150,0.2);
   }
+  .delete {
+    margin-top: 30px;
+    text-align: center;
+}
 </style>

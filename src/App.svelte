@@ -4,7 +4,6 @@
 	import PollForm from './components/PollForm.svelte';
 	import PollList from './components/PollList.svelte';
 	import Tabs from './shared/Tabs.svelte';
-
 	//tabs
 	let items = ['current polls','add new poll'];
 	let activeItem = 'current polls';
@@ -16,7 +15,6 @@
 		activeItem = 'current polls';
 	}	
 </script>
-
 
 <Header/>
 <main>
