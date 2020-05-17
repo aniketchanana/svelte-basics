@@ -1,14 +1,24 @@
 <script>
+    import PollStore from '../stores/PollStore.js';
     import Card from '../shared/Card.svelte';
-    import {createEventDispatcher} from 'svelte';
-    const dispatch = createEventDispatcher();
     export let poll;
 
     $: totalVotes = poll.voteA + poll.voteB;
     $: percentA = Math.floor(100 / totalVotes * poll.voteA);
     $: percentB = Math.floor(100 / totalVotes * poll.voteB);
     const handelVote = (option,id) => {
-        dispatch('vote',{option,id});
+        PollStore.update(currentPolls => {
+            let copiedPolls = [...currentPolls];
+            let upVotedPoll = copiedPolls.find((poll) => poll.id === id);
+            if(option === 'a') {
+                upVotedPoll.voteA++;
+            }
+            if(option === 'b') {
+                upVotedPoll.voteB++;
+            }
+
+            return copiedPolls;
+        })
     }
 </script>
 
